@@ -5,14 +5,15 @@ LDFLAGSSTRING +=-X main.GitCommit=$(GITCOMMIT)
 LDFLAGSSTRING +=-X main.GitDate=$(GITDATE)
 LDFLAGS := -ldflags "$(LDFLAGSSTRING)"
 
-TM_ABI_ARTIFACT := ./abis/TreasureManager.sol/TreasureManager.json
+VRF_ABI_ARTIFACT := ./abis/DappLinkVRF.sol/DappLinkVRF.json
+FACTORY_ABI_ARTIFACT := ./abis/DappLinkVRFFactory.sol/DappLinkVRFFactory.json
 
 
-contracts-caller:
-	env GO111MODULE=on go build -v $(LDFLAGS) ./cmd/contracts-caller
+dapplink-vrf:
+	env GO111MODULE=on go build -v $(LDFLAGS) ./cmd/dapplink-vrf
 
 clean:
-	rm contracts-caller
+	rm dapplink-vrf
 
 test:
 	go test -v ./...
@@ -20,25 +21,46 @@ test:
 lint:
 	golangci-lint run ./...
 
-bindings:
+bindings: binding-vrf binding-factory
+
+
+binding-vrf:
 	$(eval temp := $(shell mktemp))
 
-	cat $(TM_ABI_ARTIFACT) \
-		| jq -r .bytecode > $(temp)
+	cat $(VRF_ABI_ARTIFACT) \
+    	| jq -r .bytecode.object > $(temp)
 
-	cat $(TM_ABI_ARTIFACT) \
+	cat $(VRF_ABI_ARTIFACT) \
 		| jq .abi \
 		| abigen --pkg bindings \
 		--abi - \
-		--out bindings/treasure_manager.go \
-		--type TreasureManager \
+		--out bindings/dapplinkvrf.go \
+		--type DappLinkVRF \
+		--bin $(temp)
+
+		rm $(temp)
+
+binding-factory:
+	$(eval temp := $(shell mktemp))
+
+	cat $(FACTORY_ABI_ARTIFACT) \
+    	| jq -r .bytecode.object > $(temp)
+
+	cat $(FACTORY_ABI_ARTIFACT) \
+		| jq .abi \
+		| abigen --pkg bindings \
+		--abi - \
+		--out bindings/dapplinkfactory.go \
+		--type DappLinkVRFFactory \
 		--bin $(temp)
 
 		rm $(temp)
 
 .PHONY: \
-	contracts-caller \
+	dapplink-vrf \
 	bindings \
+	binding-vrf \
+	binding-factory \
 	clean \
 	test \
 	lint
