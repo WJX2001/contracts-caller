@@ -1,4 +1,4 @@
-module github.com/WJX2001/contract-caller
+module github.com/WJX2001/contracts-caller
 
 go 1.23.2
 
