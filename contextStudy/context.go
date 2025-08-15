@@ -19,7 +19,7 @@ func ContextMain() {
 	select {
 	case <-ctx.Done():
 		fmt.Println("main", ctx.Err())
-		context.WithCancel()
+		// context.WithCancel()
 	}
 }
 
