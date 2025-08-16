@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: dapplink-vrf-postgres
+    environment:
+      POSTGRES_DB: dapplink_vrf
+      POSTGRES_USER: dapplink_user
+      POSTGRES_PASSWORD: dapplink_password
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
