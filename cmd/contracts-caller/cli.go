@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 
+	dapplink_vrf "github.com/WJX2001/contract-caller"
 	"github.com/WJX2001/contract-caller/common/cliapp"
 	"github.com/WJX2001/contract-caller/config"
-
 	flag2 "github.com/WJX2001/contract-caller/flags"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/urfave/cli/v2"
@@ -20,7 +20,8 @@ func runDappLinkVrf(ctx *cli.Context, shutdown context.CancelCauseFunc) (cliapp.
 		return nil, err
 	}
 	// return dappli
-	return nil, nil
+	// return nil, nil
+	return dapplink_vrf.NewDappLinkVrf(ctx.Context, &cfg, shutdown)
 }
 
 func NewCli(GitCommit string, GitData string) *cli.App {
