@@ -6,7 +6,9 @@ import (
 
 	"github.com/WJX2001/contract-caller/config"
 	"github.com/WJX2001/contract-caller/database"
+	"github.com/WJX2001/contract-caller/synchronizer/node"
 	"github.com/WJX2001/contract-caller/worker"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 type DappLinkVrf struct {
@@ -21,6 +23,16 @@ type DappLinkVrf struct {
 }
 
 func NewDappLinkVrf(ctx context.Context, cfg *config.Config, shutdown context.CancelCauseFunc) (*DappLinkVrf, error) {
+	// 创建以太坊客户端
+	ethClient, err := node.DialEthClient(ctx, cfg.Chain.ChainRpcUrl)
+	if err != nil {
+		log.Error("new eth client fail", "err", err)
+		return nil, err
+	}
+
+	// TODO: 创建数据库连接
+	// db, err := database.NewDB(ctx, cfg)
+
 	return nil, nil
 }
 
