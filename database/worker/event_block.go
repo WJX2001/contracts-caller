@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 
 	common2 "github.com/WJX2001/contract-caller/database/common"
+	_ "github.com/WJX2001/contract-caller/database/utils/serializers"
 )
 
 type EventBlocks struct {

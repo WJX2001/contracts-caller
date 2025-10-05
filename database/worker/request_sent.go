@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 
+	_ "github.com/WJX2001/contract-caller/database/utils/serializers"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/google/uuid"
 	"gorm.io/gorm"

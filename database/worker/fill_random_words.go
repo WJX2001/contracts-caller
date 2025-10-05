@@ -3,6 +3,7 @@ package worker
 import (
 	"math/big"
 
+	_ "github.com/WJX2001/contract-caller/database/utils/serializers"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
