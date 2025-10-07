@@ -6,6 +6,7 @@ import (
 
 	"github.com/WJX2001/contract-caller/config"
 	"github.com/WJX2001/contract-caller/database"
+	// "github.com/WJX2001/contract-caller/synchronizer"
 	"github.com/WJX2001/contract-caller/synchronizer/node"
 	"github.com/WJX2001/contract-caller/worker"
 	"github.com/ethereum/go-ethereum/log"
@@ -30,8 +31,19 @@ func NewDappLinkVrf(ctx context.Context, cfg *config.Config, shutdown context.Ca
 		return nil, err
 	}
 
-	// TODO: 创建数据库连接
-	// db, err := database.NewDB(ctx, cfg)
+	// 创建数据库连接
+	db, err := database.NewDB(ctx, cfg.MasterDB)
+	if err != nil {
+		log.Error("new database fail", "err", err)
+		return nil, err
+	}
+
+	// 3. 创建同步器
+	// synchronizerS, err := synchronizer.NewSynchronizer(cfg, db, ethClient, shutdown)
+	// if err != nil {
+	// 	log.Error("new synchronizer fail", "err", err)
+	// 	return nil, err
+	// }
 
 	return nil, nil
 }
