@@ -6,7 +6,8 @@ import (
 
 	"github.com/WJX2001/contract-caller/config"
 	"github.com/WJX2001/contract-caller/database"
-	// "github.com/WJX2001/contract-caller/synchronizer"
+	"github.com/WJX2001/contract-caller/synchronizer"
+
 	"github.com/WJX2001/contract-caller/synchronizer/node"
 	"github.com/WJX2001/contract-caller/worker"
 	"github.com/ethereum/go-ethereum/log"
@@ -39,12 +40,14 @@ func NewDappLinkVrf(ctx context.Context, cfg *config.Config, shutdown context.Ca
 	}
 
 	// 3. 创建同步器
-	// synchronizerS, err := synchronizer.NewSynchronizer(cfg, db, ethClient, shutdown)
-	// if err != nil {
-	// 	log.Error("new synchronizer fail", "err", err)
-	// 	return nil, err
-	// }
+	synchronizerS, err := synchronizer.NewSynchronizer(cfg, db, ethClient, shutdown)
+	if err != nil {
+		log.Error("new synchronizer fail", "err", err)
+		return nil, err
+	}
 
+	// 创建驱动引擎
+	// eventConfigm := &event.EventsHandlerConfig
 	return nil, nil
 }
 
