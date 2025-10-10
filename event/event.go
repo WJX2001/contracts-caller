@@ -110,6 +110,11 @@ func (eh *EventsHandler) Start() error {
 	return nil
 }
 
+func (eh *EventsHandler) Close() error {
+	eh.resourceCancel()    // 取消上下文
+	return eh.tasks.Wait() // 等待所有任务完成
+}
+
 /*
 1. 从数据库中读取同步器存储的原始事件
 2. 解析 VRF 相关的智能合约事件

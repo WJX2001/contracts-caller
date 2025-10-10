@@ -39,3 +39,7 @@ func (t *Group) Go(fn func() error) {
 		return fn()
 	})
 }
+
+func (t *Group) Wait() error {
+	return t.errGroup.Wait()
+}

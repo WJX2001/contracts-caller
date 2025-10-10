@@ -2,10 +2,12 @@ package dapplink_vrf
 
 import (
 	"context"
+	"math/big"
 	"sync/atomic"
 
 	"github.com/WJX2001/contract-caller/config"
 	"github.com/WJX2001/contract-caller/database"
+	"github.com/WJX2001/contract-caller/event"
 	"github.com/WJX2001/contract-caller/synchronizer"
 
 	"github.com/WJX2001/contract-caller/synchronizer/node"
@@ -43,6 +45,20 @@ func NewDappLinkVrf(ctx context.Context, cfg *config.Config, shutdown context.Ca
 	synchronizerS, err := synchronizer.NewSynchronizer(cfg, db, ethClient, shutdown)
 	if err != nil {
 		log.Error("new synchronizer fail", "err", err)
+		return nil, err
+	}
+
+	eventConfigm := &event.EventsHandlerConfig{
+		DappLinkVrfAddress:        cfg.Chain.DappLinkVrfContractAddress,
+		DappLinkVrfFactoryAddress: cfg.Chain.DappLinkVrfFactoryContractAddress,
+		LoopInterval:              cfg.Chain.EventInterval,
+		StartHeight:               big.NewInt(int64(cfg.Chain.StartingHeight)),
+		Epoch:                     500,
+	}
+
+	// 4. 创建事件处理器
+	eventHandler, err := event.NewEventsHandler(db, eventConfigm, shutdown)
+	if err != nil {
 		return nil, err
 	}
 
