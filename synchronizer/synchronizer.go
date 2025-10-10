@@ -13,11 +13,16 @@ import (
 	"github.com/WJX2001/contract-caller/database/event"
 	"github.com/WJX2001/contract-caller/database/utils"
 	"github.com/WJX2001/contract-caller/synchronizer/node"
+	"github.com/WJX2001/contract-caller/synchronizer/retry"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/log"
 )
+
+/*
+
+ */
 
 type Synchronizer struct {
 	ethClient node.EthClient // 以太坊客户端
@@ -121,13 +126,19 @@ func (syncer *Synchronizer) Start() error {
 					log.Info("Latest header", "latestHeader Number", latestHeader.Number)
 				}
 			}
-			// err := syncer
+
+			err := syncer.processBatch(syncer.headers, syncer.chainCfg)
+			if err == nil {
+				syncer.headers = nil
+			}
 		}
+		return nil
 	})
+	return nil
 }
 
 /*
-对一批区块头做一次：抽取日志 -> 构建区块头结构 -> 构造合约事件 -> 持久化道数据库
+对一批区块头做一次：抽取日志 -> 构建区块头结构 -> 构造合约事件 -> 持久化到数据库
 */
 func (syncer *Synchronizer) processBatch(headers []types.Header, chainCfg *config.ChainConfig) error {
 	if len(headers) == 0 {
@@ -204,4 +215,35 @@ func (syncer *Synchronizer) processBatch(headers []types.Header, chainCfg *confi
 		timestamp := headerMap[logEvent.BlockHash].Time
 		chainContractEvent[i] = event.ContractEventFromLog(&logs.Logs[i], timestamp)
 	}
+
+	// 使用指数退避重试策略尝试做一次事务性的持久化
+	// StoreBlockHeaders 和 StoreContractEvents 都在同一事物内
+	/*
+		最小等待 1s，最大等待20s 抖动 250ms
+	*/
+	retryStrategy := &retry.ExponentialStrategy{Min: 1000, Max: 20_000, MaxJitter: 250}
+	if _, err := retry.Do[interface{}](syncer.resourceCtx, 10, retryStrategy, func() (interface{}, error) {
+		// 每次重试内调用 Transaction 执行 DB操作 成功则提交 失败则返回 error
+		if err := syncer.db.Transaction(func(tx *database.DB) error {
+			if err := tx.Blocks.StoreBlockHeaders(blockHeaders); err != nil {
+				return err
+			}
+
+			if err := tx.ContractEvent.StoreContractEvents(chainContractEvent); err != nil {
+				return err
+			}
+			return nil
+		}); err != nil {
+			log.Info("unable to persist batch", err)
+			return nil, fmt.Errorf("unable to persist batch: %w", err)
+		}
+		return nil, nil
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (syncer *Synchronizer) Close() error {
+	return nil
 }
