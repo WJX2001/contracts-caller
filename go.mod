@@ -3,11 +3,13 @@ module github.com/WJX2001/contract-caller
 go 1.23.2
 
 require (
+	github.com/decred/dcrd/hdkeychain/v3 v3.1.2
 	github.com/ethereum/go-ethereum v1.16.1
 	github.com/google/uuid v1.3.0
 	github.com/jackc/pgtype v1.14.4
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.10.0
+	github.com/tyler-smith/go-bip39 v1.1.0
 	github.com/urfave/cli/v2 v2.27.5
 	golang.org/x/sync v0.16.0
 	gorm.io/driver/postgres v1.6.0
@@ -26,6 +28,9 @@ require (
 	github.com/crate-crypto/go-ipa v0.0.0-20240724233137-53bbb0ceb27a // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/deckarep/golang-set/v2 v2.6.0 // indirect
+	github.com/decred/base58 v1.0.5 // indirect
+	github.com/decred/dcrd/crypto/blake256 v1.0.1 // indirect
+	github.com/decred/dcrd/crypto/ripemd160 v1.0.2 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.3.0 // indirect
 	github.com/ethereum/c-kzg-4844/v2 v2.1.0 // indirect
 	github.com/ethereum/go-verkle v0.2.2 // indirect

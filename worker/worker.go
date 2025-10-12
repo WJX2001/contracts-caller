@@ -3,11 +3,13 @@ package worker
 import (
 	"context"
 	"fmt"
-	"github.com/WJX2001/contract-caller/common/tasks"
-	"github.com/WJX2001/contract-caller/driver"
-	"github.com/ethereum/go-ethereum/log"
 	"math/big"
 	"time"
+
+	"github.com/WJX2001/contract-caller/common/tasks"
+	"github.com/WJX2001/contract-caller/database"
+	"github.com/WJX2001/contract-caller/driver"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 type WorkerConfig struct {
@@ -15,18 +17,19 @@ type WorkerConfig struct {
 }
 
 type Worker struct {
-	workerConfig *WorkerConfig
-	// TODO: 这里后续补充一个数据库配置
+	workerConfig   *WorkerConfig
+	db             *database.DB
 	deg            *driver.DriverEngine
 	resourceCtx    context.Context
 	resourceCancel context.CancelFunc
 	tasks          tasks.Group
 }
 
-func NewWorker(deg *driver.DriverEngine, workerConfig *WorkerConfig, shutdown context.CancelCauseFunc) (*Worker, error) {
+func NewWorker(db *database.DB, deg *driver.DriverEngine, workerConfig *WorkerConfig, shutdown context.CancelCauseFunc) (*Worker, error) {
 	resCtx, resCancel := context.WithCancel(context.Background())
 
 	return &Worker{
+		db:             db,
 		deg:            deg,
 		workerConfig:   workerConfig,
 		resourceCtx:    resCtx,
@@ -75,4 +78,9 @@ func (wk *Worker) ProcessCallerVrf() error {
 	}
 	return nil
 
+}
+
+func (wk *Worker) Close() error {
+	wk.resourceCancel()
+	return wk.tasks.Wait()
 }

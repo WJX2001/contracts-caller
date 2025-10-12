@@ -22,6 +22,14 @@ import (
 // TODO: 此文件封装与 VRF 合约的底层交互逻辑：合约调用、构造交易、动态 gas 设置、重试发送等链上交互能力
 // 这是链下服务调用 VRF 合约的核心组件
 
+/**
+一个名为DriverEingine的结构体，主要作用是与部署在链上的 DappLink VRF 合约进行交互，并通过 txmgr.TxManager 管理交易的生命周期
+	- 如：构建、发送、重发、确认等，是链下服务与合约之间通信的桥梁
+	- 封装并管理链上 DappLink VRF 合约的调用逻辑。
+	- 统一构建、重发、确认交易的流程，防止交易失败或者 gas 设置错误
+	- 兼容旧链上不支持 EIP-1559 的情况
+*/
+
 var (
 	errMaxPriorityFeePerGasNotFound = errors.New(
 		"Method eth_maxPriorityFeePerGas not found",
