@@ -25,7 +25,7 @@ func main() {
 	app := NewCli(GitCommit, GitData)
 	// 创建一个带有中断阻塞器的上下文，这允许程序优雅处理系统中断信号
 	ctx := opio.WithInterruptBlocker(context.Background())
-	// 运行应用并处理错误
+	// 运行应用并处理错误 解析命令行参数
 	if err := app.RunContext(ctx, os.Args); err != nil {
 		log.Error("Application failed", err)
 		os.Exit(1)

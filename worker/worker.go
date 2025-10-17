@@ -42,7 +42,7 @@ func NewWorker(db *database.DB, deg *driver.DriverEngine, workerConfig *WorkerCo
 
 func (wk *Worker) Start() error {
 	log.Info("starting worker processor...")
-	tickerEventWorker := time.NewTicker(wk.workerConfig.LoopInterval) // 每隔5s 执行一次 ticker
+	tickerEventWorker := time.NewTicker(wk.workerConfig.LoopInterval) // 每隔 几s 执行一次 ticker
 	wk.tasks.Go(func() error {
 		for range tickerEventWorker.C {
 			log.Info("start handler random for vrf")

@@ -138,6 +138,7 @@ func (syncer *Synchronizer) Start() error {
 }
 
 /*
+批量处理区块数据
 对一批区块头做一次：抽取日志 -> 构建区块头结构 -> 构造合约事件 -> 持久化到数据库
 */
 func (syncer *Synchronizer) processBatch(headers []types.Header, chainCfg *config.ChainConfig) error {

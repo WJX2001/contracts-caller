@@ -115,6 +115,7 @@ func NewDappLinkVrf(ctx context.Context, cfg *config.Config, shutdown context.Ca
 }
 
 // 启动所有服务
+// 启动定时同步任务
 func (dvrf *DappLinkVrf) Start(ctx context.Context) error {
 	// 1. 启动同步器
 	err := dvrf.synchronizer.Start()
